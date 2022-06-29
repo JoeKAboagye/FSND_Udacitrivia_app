@@ -18,8 +18,9 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
+        self.database_host = "127.0.0.1:5432"
         self.database_path = "postgresql://{}:{}@{}/{}".format(
-            os.getenv("DB_USER"), os.getenv("DB_USER_PASSWORD"), os.getenv("DB_HOST"), self.database_name)
+            os.getenv("DB_USER"), os.getenv("DB_USER_PASSWORD"), self.database_host, self.database_name)
 
         setup_db(self.app, self.database_path)
 
