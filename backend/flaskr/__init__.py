@@ -213,34 +213,30 @@ def create_app(test_config=None):
     """
     @app.route('/quizzes', methods=['POST'])
     def random_questions():
-        quizzes = request.get_json()
-        previous_questions = quizzes.get("previous_questions", None)
-        quiz_category = quizzes.get("quiz_category", None)
+        body = request.get_json()
+        previous_questions = body.get("previous_questions", None)
+        quiz_category = body['quiz_category']['id']
 
         try:
-            if quiz_category == 0:
-                questions = Question.query.all()
-            else:
+            if quiz_category:
                 questions = Question.query.filter(
                     Question.category == quiz_category).all()
-
-            page_questions = paginate_questions(request, questions)
-
-            current_questions = []
-
-            for question in page_questions:
-                if question['id'] not in previous_questions:
-                    current_questions.append(question)
-
-            if len(current_questions) == 0:
-                current_question = ''
             else:
-                current_question = random.choice(current_questions)
-                print(current_question)
+                questions = Question.query.all()
+
+            current_questions = [question.format() for question in questions]
+            random_question = random.choice(current_questions)
+
+            while random_question['id'] in previous_questions:
+                if len(previous_questions) == len(current_questions):
+                    random_question = None
+                    break
+
+                random_question = random.choice(current_questions)
 
             return jsonify({
                 "success": True,
-                "question": current_question
+                "question": random_question
             })
         except:
             abort(422)
