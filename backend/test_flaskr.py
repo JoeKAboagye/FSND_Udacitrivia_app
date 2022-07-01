@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
 from models import setup_db, Question, Category
+from os import environ as env
 from dotenv import load_dotenv
 
 load_dotenv
@@ -18,11 +19,13 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_host = "127.0.0.1:5432"
         self.database_path = "postgresql://{}:{}@{}/{}".format(
-            os.getenv("DB_USER"), os.getenv("DB_USER_PASSWORD"), self.database_host, self.database_name)
+            env["DB_USER"], env["DB_USER_PASSWORD"], env["DB_HOST"], self.database_name)
 
         setup_db(self.app, self.database_path)
+
+        self.new_question = {'question': 'Where is the oesphagus',
+                             'answer': 'Behind the trachea', 'category': 1, 'difficulty': 3}
 
         # binds the app to the current context
         with self.app.app_context():
