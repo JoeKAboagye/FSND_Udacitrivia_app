@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from dotenv import load_dotenv
 
-load_dotenv
+load_dotenv()
 
 database_path = 'postgresql://{}:{}@{}/{}'.format(
     os.getenv("DB_USER"), os.getenv("DB_USER_PASSWORD"), os.getenv("DB_HOST"), os.getenv("DB_NAME"))

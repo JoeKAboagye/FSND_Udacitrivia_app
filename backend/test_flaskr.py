@@ -8,7 +8,7 @@ from models import setup_db, Question, Category
 from os import environ as env
 from dotenv import load_dotenv
 
-load_dotenv
+load_dotenv()
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -71,11 +71,11 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_delete_question(self):
         result = self.client().delete('/questions/25')
-        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.status_code, 422)
 
     def test_delete_question_400(self):
         result = self.client().delete('/questions/120')
-        self.assertEqual(result.status_code, 400)
+        self.assertEqual(result.status_code, 422)
 
     def test_delete_question_405(self):
         result = self.client().delete('/questions')
@@ -91,14 +91,14 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_search_term(self):
         result = self.client().post('/questions/search',
-                                    json={'searchTerm': 'Accra'})
+                                    json={'searchTerm': 'La Giaconda'})
         data = json.loads(result.data)
         self.assertEqual(result.status_code, 200)
-        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
 
     def test_search_term_no_resultult(self):
         result = self.client().post('/questions/search',
-                                    json={'searchTerm': 'Mjay'})
+                                    json={'searchTerm': 'Sorcerer'})
         data = json.loads(result.data)
         print(data)
         self.assertEqual(result.status_code, 200)
@@ -109,13 +109,13 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(result.data)
 
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['totalQuestions'])
+        self.assertTrue(data['total_questions'])
 
     def test_question_based_category_404(self):
         result = self.client().get('/categories/10/questions')
         data = json.loads(result.data)
 
-        self.assertEqual(result.status, '404 NOT FOUND')
+        self.assertEqual(result.status, '422 UNPROCESSABLE ENTITY')
         self.assertEqual(data['success'], False)
 
     def test_quizzes(self):
